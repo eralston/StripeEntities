@@ -1,2 +1,2 @@
 # StripeEntities
-A library for integrating Stripe.Net into your ASP.Net web app via Entity Framework
+A library for integrating Stripe.Net into your ASP.Net MVC web app via Entity Framework
