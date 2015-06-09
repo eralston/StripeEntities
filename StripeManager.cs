@@ -201,5 +201,100 @@ namespace StripeEntities
         }
 
         #endregion
+
+        #region Products & Transactions
+
+        /// <summary>
+        /// Charges the given user one time for the given price in USD
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="price"></param>
+        /// <param name="chargeDescription"></param>
+        /// <returns></returns>
+        public static string Charge(IStripeUser user, float price, string chargeDescription = "")
+        {
+            var charge = CreateChargeOptions(price, chargeDescription);
+
+            // setting up the card
+            charge.CustomerId = user.PaymentSystemId;
+
+            return ExecuteCharge(charge);
+        }
+
+        /// <summary>
+        /// Charges the given card token one time for the given price in USD
+        /// </summary>
+        /// <param name="cardToken"></param>
+        /// <param name="price"></param>
+        /// <param name="chargeDescription"></param>
+        /// <returns></returns>
+        public static string Charge(string cardToken, float price, string chargeDescription = "")
+        {
+            var charge = CreateChargeOptions(price, chargeDescription);
+
+            // setting up the card
+            charge.Card = new StripeCreditCardOptions()
+            {
+                // set this property if using a token
+                TokenId = cardToken
+            };
+
+            return ExecuteCharge(charge);
+        }
+
+        /// <summary>
+        /// Charges the given user for the given product
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        public static string Charge(IStripeUser user, IStripeProduct product)
+        {
+            return Charge(user, product.Price, product.Title);
+        }
+
+        /// <summary>
+        /// Creates a new charge option instance, initializing it with common properties
+        /// </summary>
+        /// <param name="price"></param>
+        /// <param name="chargeDescription"></param>
+        /// <returns></returns>
+        private static StripeChargeCreateOptions CreateChargeOptions(float price, string chargeDescription)
+        {
+            var charge = new StripeChargeCreateOptions();
+
+            // always set these properties
+            charge.Amount = Convert.ToInt32(price * 100.0);
+            charge.Currency = "usd";
+
+            // set this if you want to
+            charge.Description = chargeDescription;
+
+            // (not required) set this to false if you don't want to capture the charge yet - requires you call capture later
+            charge.Capture = true;
+
+            return charge;
+        }
+
+        /// <summary>
+        /// Executes the given charge options, returning the ID for the charge
+        /// </summary>
+        /// <param name="charge"></param>
+        /// <returns></returns>
+        private static string ExecuteCharge(StripeChargeCreateOptions charge)
+        {
+            var chargeService = new StripeChargeService();
+            StripeCharge stripeCharge = chargeService.Create(charge);
+
+            // Log the charge
+            System.Diagnostics.Trace.TraceInformation("Created new charge in stripe: '{0}' for {1}",
+                charge.Description,
+                charge.Amount);
+
+            // Return the ID for the charge
+            return stripeCharge.Id;
+        }
+
+        #endregion
     }
 }

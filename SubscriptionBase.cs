@@ -14,27 +14,31 @@ namespace StripeEntities
     /// This should be extended into an application-specific class
     /// There should be one instance for each payment relationship between the system and a customer (one for each company)
     /// </summary>
-    public abstract class SubscriptionBase : BaseModel, IStripeSubscription
+    public abstract class SubscriptionBase : ModelBase, IStripeSubscription
     {
         /// <summary>
         /// Gets or sets the date this subscription will expire and be no longer valid
         /// NOTE: This is constantly pushed forward by the recurring billing action of the system
         /// </summary>
         [Display(Name = "Active Until")]
+        [Editable(false)]
         public DateTime? ActiveUntil { get; set; }
 
         /// <summary>
         /// Gets or sets the ad hoc comments on this subscription
         /// </summary>
+        [Editable(true)]
         public string Notes { get; set; }
 
         /// <summary>
         /// Gets or sets the identifier used by the payment system
         /// </summary>
+        [Editable(false)]
         public string PaymentSystemId { get; set; }
 
         // To-One on SubscriptionPlan
         [ForeignKey("Plan")]
+        [Editable(true)]
         public int PlanId { get; set; }
 
         /// <summary>
