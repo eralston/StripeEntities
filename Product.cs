@@ -50,7 +50,7 @@ namespace StripeEntities
         /// Gets or sets the price for this product
         /// EG: 99.99 (ninety-nine dollars and ninety-nine cents)
         /// </summary>
-        [Editable(true)]
+        [Editable(false)]
         public float Price { get; set; }
     }
 }

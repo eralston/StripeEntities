@@ -46,10 +46,10 @@ namespace StripeEntities
 
         [DisplayName("Trial Days")]
         [DefaultValue(0)]
-        [Editable(true)]
+        [Editable(false)]
         public int TrialDays { get; set; }
 
-        [Editable(true)]
+        [Editable(false)]
         public float Price { get; set; }
 
         [Editable(true)]
