@@ -92,7 +92,7 @@ namespace StripeEntities
             newCustomer.Email = user.Email;
 
             if (paymentToken != null)
-                newCustomer.Card = new StripeCreditCardOptions() { TokenId = paymentToken };
+                newCustomer.Source = new StripeSourceOptions() { TokenId = paymentToken };
 
             var customerService = new StripeCustomerService();
             StripeCustomer stripeCustomer = customerService.Create(newCustomer);
@@ -126,7 +126,7 @@ namespace StripeEntities
             var customerUpdate = new StripeCustomerUpdateOptions() { Email = user.Email };
 
             // Create a token for this payment token
-            customerUpdate.Card = new StripeCreditCardOptions() { TokenId = paymentToken };
+            customerUpdate.Source = new StripeSourceOptions() { TokenId = paymentToken };
 
             var customerService = new StripeCustomerService();
             StripeCustomer stripeCustomer = customerService.Update(user.PaymentSystemId, customerUpdate);
@@ -233,7 +233,7 @@ namespace StripeEntities
             var charge = CreateChargeOptions(price, chargeDescription);
 
             // setting up the card
-            charge.Card = new StripeCreditCardOptions()
+            charge.Source = new StripeSourceOptions()
             {
                 // set this property if using a token
                 TokenId = cardToken

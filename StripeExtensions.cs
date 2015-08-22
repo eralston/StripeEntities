@@ -20,18 +20,18 @@ namespace StripeEntities
         /// <returns></returns>
         public static StripeCard GetDefaultCard(this StripeCustomer customer)
         {
-            if (customer.StripeDefaultCard != null)
-                return customer.StripeDefaultCard;
+            if (customer.DefaultSource != null)
+                return customer.DefaultSource;
 
-            if (string.IsNullOrEmpty(customer.StripeDefaultCardId))
+            if (string.IsNullOrEmpty(customer.DefaultSourceId))
                 return null;
 
-            if (customer.StripeCardList == null)
+            if (customer.SourceList == null || customer.SourceList.Data == null)
                 return null;
 
-            foreach(StripeCard card in customer.StripeCardList.StripeCards)
+            foreach(StripeCard card in customer.SourceList.Data)
             {
-                if (card.Id == customer.StripeDefaultCardId)
+                if (card.Id == customer.DefaultSourceId)
                     return card;
             }
 
