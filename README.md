@@ -25,9 +25,7 @@ After you setup a Stripe account and follow the instructions for setting up Stri
 2. Extend the EntityPlanBase abstract class - This provides a description of your plans. Extending it allows you to add properties such as feature flags and maximum resource counts 
 3. Extend the SubscriptionEntityBase abstract class - This provides linking the subscription to your relevant subscription unit, such as a user or a team in the system. 
 
-Generally, you'll then make sure the classses implementing/extending ICustomerEntity, PlanEntityBase, and SubscriptionEntityBase are part of your DbContext sub-class. You can then use these classes when appropriate in your application to interact with stripe and persist changes into your system.
-
-Then you are ready to use the StripeEntities.StripeManager class to interact with the Stripe API via Stripe.Net. Be sure to:
+Generally, you'll then make sure the classses implementing/extending ICustomerEntity, PlanEntityBase, and SubscriptionEntityBase are part of your DbContext sub-class. Then you are ready to use the StripeEntities.StripeManager class to interact with the Stripe API via Stripe.Net. Be sure to:
 
 1. Create one or more plans by creating and saving some instances of SubscriptionPlan AND calling StripeManager.CreatePlan
 2. Create one or more customers by creating and saving some instances of your IStripeUser implementer AND calling StripeManager.CreateOrUpdateCustomer
