@@ -20,8 +20,19 @@ namespace StripeEntities
         /// </summary>
         public enum ProductState
         {
+            /// <summary>
+            /// State indicating product is in the system, but not yet available
+            /// </summary>
             Pending,
+
+            /// <summary>
+            /// State indicating the product is entered and available in the system
+            /// </summary>
             Available,
+
+            /// <summary>
+            /// State indicating the product is in the system, but no longer available
+            /// </summary>
             Retired
         }
 

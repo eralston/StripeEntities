@@ -20,6 +20,7 @@ namespace StripeEntities
 
         /// <summary>
         /// Creates a new plan inside of Stripe, using the given subscription plan's information
+        /// NOTE: Unlike other method calls, this requires that the plan object already have a defined PaymentSystemId property set
         /// </summary>
         /// <param name="plan"></param>
         public static StripePlan CreatePlan(IPlanEntity plan)
@@ -37,7 +38,7 @@ namespace StripeEntities
             StripePlanService planService = new StripePlanService();
             StripePlan newPlan = planService.Create(newStripePlanOptions);
 
-            
+
 
             System.Diagnostics.Trace.TraceInformation("Created new plan in stripe: '{0}' with id {1}", plan.Title, plan.PaymentSystemId);
 
@@ -85,6 +86,7 @@ namespace StripeEntities
         /// NOTE: Save changes on the underlying context for the model after calling this method
         /// </summary>
         /// <param name="customer"></param>
+        /// <param name="paymentToken"></param>
         public static void CreateCustomer(ICustomerEntity customer, string paymentToken = null)
         {
             // Do not overwrite the user, ever
@@ -161,7 +163,10 @@ namespace StripeEntities
         /// Subscribes the given user to the given plan, using the payment information already in stripe for that user
         /// NOTE: Save changes on the underlying context for the model after calling this method
         /// </summary>
+        /// <param name="customer"></param>
         /// <param name="subscription"></param>
+        /// <param name="plan"></param>
+        /// <returns></returns>
         public static StripeSubscription Subscribe(ICustomerEntity customer, ISubscriptionEntity subscription, IPlanEntity plan)
         {
             if (!string.IsNullOrEmpty(subscription.PaymentSystemId))
@@ -178,8 +183,10 @@ namespace StripeEntities
         /// <summary>
         /// Changes the given subscription to use the new plan
         /// </summary>
+        /// <param name="customer"></param>
         /// <param name="subscription"></param>
         /// <param name="newPlan"></param>
+        /// <returns></returns>
         public static StripeSubscription ChangeSubscriptionPlan(ICustomerEntity customer, ISubscriptionEntity subscription, IPlanEntity newPlan)
         {
             StripeSubscriptionUpdateOptions options = new StripeSubscriptionUpdateOptions() { PlanId = newPlan.PaymentSystemId };
@@ -196,7 +203,9 @@ namespace StripeEntities
         /// Unsubscribes the given subscription
         /// NOTE: Save changes on the underlying context for the model after calling this method
         /// </summary>
+        /// <param name="customer"></param>
         /// <param name="subscription"></param>
+        /// <returns></returns>
         public static StripeSubscription Unsubscribe(ICustomerEntity customer, ISubscriptionEntity subscription)
         {
             if (string.IsNullOrEmpty(subscription.PaymentSystemId) || string.IsNullOrEmpty(customer.PaymentSystemId))

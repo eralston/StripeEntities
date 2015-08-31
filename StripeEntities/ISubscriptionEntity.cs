@@ -4,8 +4,7 @@ namespace StripeEntities
     /// <summary>
     /// Interface for an object providing data storage for subscriptions (links from customers to plans)
     /// </summary>
-    public interface ISubscriptionEntity
+    public interface ISubscriptionEntity : IStripePersistentEntity
     {
-        string PaymentSystemId { get; set; }
     }
 }

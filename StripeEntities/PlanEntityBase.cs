@@ -14,45 +14,63 @@ namespace StripeEntities
     /// There should be one of these for each pricing/service tier in the system
     /// These are mirrored into the billing system by API integration
     /// </summary>
-    public class PlanEntityBase : ModelBase, StripeEntities.IPlanEntity
+    public class PlanEntityBase : ModelBase, IPlanEntity
     {
         /// <summary>
         /// Enumeration for the possible states of a subscription
         /// </summary>
         public enum SubscriptionState
         {
+            /// <summary>
+            /// Indicates the plan is entered, but not yet available
+            /// </summary>
             Pending,
+
+            /// <summary>
+            /// Indicates the plan is entered and available
+            /// </summary>
             Available,
+            
+            /// <summary>
+            /// Indicate the plan was once available, but is no longer 
+            /// </summary>
             Retired
         }
 
+        /// <summary>
+        /// Gets or sets the title for this plan
+        /// </summary>
         [Editable(true)]
         [Required]
         public virtual string Title { get; set; }
 
         /// <summary>
         /// The identifier used over in Stripe for this plan
+        /// NOTE: This must be set for the plan before it can be created in Stripe
+        /// Once set, this should NEVER be modified without destroying the plan in Stripe first
         /// </summary>
         [Editable(false)]
-        public string PaymentSystemId { get; set; }
+        public virtual string PaymentSystemId { get; set; }
 
-        [Editable(true)]
-        public string Note { get; set; }
-
-        [Editable(true)]
-        [DataType(DataType.MultilineText)]
-        public string Description { get; set; }
-
+        /// <summary>
+        /// Gets or sets the number of trial days available on this plan
+        /// </summary>
         [DisplayName("Trial Days")]
         [DefaultValue(0)]
         [Editable(false)]
-        public int TrialDays { get; set; }
+        public virtual int TrialDays { get; set; }
 
+        /// <summary>
+        /// Gets or sets the price in USD for this plan
+        /// </summary>
         [Editable(false)]
-        public float Price { get; set; }
+        public virtual float Price { get; set; }
 
+        /// <summary>
+        /// Gets or sets the state for this plan
+        /// </summary>
         [Editable(true)]
         [DefaultValue(SubscriptionState.Available)]
-        public SubscriptionState State { get; set; }
+        public virtual SubscriptionState State { get; set; }
     }
 }

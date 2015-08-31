@@ -25,18 +25,14 @@ namespace StripeEntities
         public DateTime? ActiveUntil { get; set; }
 
         /// <summary>
-        /// Gets or sets the ad hoc comments on this subscription
-        /// </summary>
-        [Editable(true)]
-        public string Notes { get; set; }
-
-        /// <summary>
         /// Gets or sets the identifier used by the payment system
         /// </summary>
         [Editable(false)]
         public string PaymentSystemId { get; set; }
 
-        // To-One on SubscriptionPlan
+        /// <summary>
+        /// Gets or sets the ID of the related plan for this subscription
+        /// </summary>
         [ForeignKey("Plan")]
         [Editable(true)]
         public int PlanId { get; set; }

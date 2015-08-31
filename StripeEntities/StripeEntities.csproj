@@ -28,6 +28,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\StripeEntities.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Masticore">
@@ -50,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IChargeEntity.cs" />
+    <Compile Include="IStripeEntity.cs" />
     <Compile Include="ISubscriptionEntity.cs" />
     <Compile Include="IPlanEntity.cs" />
     <Compile Include="ICustomerEntity.cs" />

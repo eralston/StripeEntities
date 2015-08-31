@@ -169,6 +169,7 @@ namespace StripeEntities.Tests
             // Arrange
             EnsureTestPlansDeleted();
             IPlanEntity plan = CreateMockPlanA();
+            plan.GeneratePaymentSystemId();
 
             // Act - create
             StripePlan createdPlan = StripeManager.CreatePlan(plan);
