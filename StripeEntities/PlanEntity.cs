@@ -6,7 +6,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 using Masticore;
-using System.Data.Entity;
 
 namespace StripeEntities
 {
@@ -15,7 +14,7 @@ namespace StripeEntities
     /// There should be one of these for each pricing/service tier in the system
     /// These are mirrored into the billing system by API integration
     /// </summary>
-    public class SubscriptionPlan : ModelBase, StripeEntities.IStripeSubscriptionPlan
+    public class PlanEntity : ModelBase, StripeEntities.IPlanEntity
     {
         /// <summary>
         /// Enumeration for the possible states of a subscription
@@ -55,14 +54,5 @@ namespace StripeEntities
         [Editable(true)]
         [DefaultValue(SubscriptionState.Available)]
         public SubscriptionState State { get; set; }
-    }
-
-    public static class SubscriptionPlanExtensions
-    {
-        public static IOrderedQueryable<SubscriptionPlan> AllAvailablePlans(this DbSet<SubscriptionPlan> plans)
-        {
-            return plans.Where(p => p.State == SubscriptionPlan.SubscriptionState.Available)
-                                                    .OrderByDescending(p => p.Price);
-        }
     }
 }

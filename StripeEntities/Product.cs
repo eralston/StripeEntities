@@ -13,7 +13,7 @@ namespace StripeEntities
     /// <summary>
     /// Describes a product in the system, a repeatable type of transaction one can make
     /// </summary>
-    public class Product : ModelBase, IStripeProduct
+    public class Product : ModelBase, IChargeEntity
     {
         /// <summary>
         /// Enumeration for the possible states of a subscription

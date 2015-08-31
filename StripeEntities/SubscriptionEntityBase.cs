@@ -14,7 +14,7 @@ namespace StripeEntities
     /// This should be extended into an application-specific class
     /// There should be one instance for each payment relationship between the system and a customer (one for each company)
     /// </summary>
-    public abstract class SubscriptionBase : ModelBase, IStripeSubscription
+    public abstract class SubscriptionEntityBase : ModelBase, ISubscriptionEntity
     {
         /// <summary>
         /// Gets or sets the date this subscription will expire and be no longer valid
@@ -44,6 +44,6 @@ namespace StripeEntities
         /// <summary>
         /// Gets or sets the plan for this subscription, which provides info to the billing system like price
         /// </summary>
-        public virtual SubscriptionPlan Plan { get; set; }
+        public virtual PlanEntity Plan { get; set; }
     }
 }

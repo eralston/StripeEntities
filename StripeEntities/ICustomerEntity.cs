@@ -5,7 +5,7 @@ namespace StripeEntities
     /// <summary>
     /// An interface to be implemented by an object able to present data for Stripe users
     /// </summary>
-    public interface IStripeUser
+    public interface ICustomerEntity
     {
         /// <summary>
         /// Gets or sets the payment information associated with this user
@@ -29,7 +29,7 @@ namespace StripeEntities
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public static bool HasPaymentInfo(this IStripeUser user)
+        public static bool HasPaymentInfo(this ICustomerEntity user)
         {
             return !string.IsNullOrEmpty(user.PaymentSystemId);
         }

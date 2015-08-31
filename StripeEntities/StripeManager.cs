@@ -22,7 +22,7 @@ namespace StripeEntities
         /// Creates a new plan inside of Stripe, using the given subscription plan's information
         /// </summary>
         /// <param name="plan"></param>
-        public static void CreatePlan(IStripeSubscriptionPlan plan)
+        public static StripePlan CreatePlan(IPlanEntity plan)
         {
             // Save it to Stripe
             StripePlanCreateOptions newStripePlanOptions = new StripePlanCreateOptions();
@@ -36,9 +36,12 @@ namespace StripeEntities
 
             StripePlanService planService = new StripePlanService();
             StripePlan newPlan = planService.Create(newStripePlanOptions);
-            plan.PaymentSystemId = newPlan.Id;
+
+            
 
             System.Diagnostics.Trace.TraceInformation("Created new plan in stripe: '{0}' with id {1}", plan.Title, plan.PaymentSystemId);
+
+            return newPlan;
         }
 
         /// <summary>
@@ -46,15 +49,17 @@ namespace StripeEntities
         /// NOTE: Due to limitatons with Stripe, this can only update the name of the plan
         /// </summary>
         /// <param name="plan"></param>
-        public static void UpdatePlan(IStripeSubscriptionPlan plan)
+        public static StripePlan UpdatePlan(IPlanEntity plan)
         {
             StripePlanUpdateOptions options = new StripePlanUpdateOptions();
             options.Name = plan.Title;
 
             StripePlanService planService = new StripePlanService();
-            planService.Update(plan.PaymentSystemId, options);
+            StripePlan updatedPlan = planService.Update(plan.PaymentSystemId, options);
 
             System.Diagnostics.Trace.TraceInformation("Updated plan in stripe: '{0}' with id '{1}'", plan.Title, plan.PaymentSystemId);
+
+            return updatedPlan;
         }
 
         /// <summary>
@@ -62,14 +67,12 @@ namespace StripeEntities
         /// NOTE: Delete the model from the underlying context after calling this method
         /// </summary>
         /// <param name="plan"></param>
-        public static void DeletePlan(IStripeSubscriptionPlan plan)
+        public static void DeletePlan(IPlanEntity plan)
         {
             var planService = new StripePlanService();
             planService.Delete(plan.PaymentSystemId);
 
             System.Diagnostics.Trace.TraceInformation("Deleting plan in stripe: '{0}' with id '{1}", plan.Title, plan.PaymentSystemId);
-
-            plan.PaymentSystemId = null;
         }
 
         #endregion
@@ -78,18 +81,19 @@ namespace StripeEntities
 
         /// <summary>
         /// Creates a new customer record in Stripe for the given user
+        /// This will set the "PaymentSystemId" property on the given IStripeUser instance if the user was successfully created
         /// NOTE: Save changes on the underlying context for the model after calling this method
         /// </summary>
-        /// <param name="user"></param>
-        public static void CreateCustomer(IStripeUser user, string paymentToken = null)
+        /// <param name="customer"></param>
+        public static void CreateCustomer(ICustomerEntity customer, string paymentToken = null)
         {
             // Do not overwrite the user, ever
-            if (user.HasPaymentInfo())
+            if (customer.HasPaymentInfo())
                 return;
 
             var newCustomer = new StripeCustomerCreateOptions();
 
-            newCustomer.Email = user.Email;
+            newCustomer.Email = customer.Email;
 
             if (paymentToken != null)
                 newCustomer.Source = new StripeSourceOptions() { TokenId = paymentToken };
@@ -98,20 +102,20 @@ namespace StripeEntities
             StripeCustomer stripeCustomer = customerService.Create(newCustomer);
 
             // Set the accounting info
-            user.PaymentSystemId = stripeCustomer.Id;
+            customer.PaymentSystemId = stripeCustomer.Id;
 
-            System.Diagnostics.Trace.TraceInformation("Created customer in stripe: '{0}' with id '{1}", user.Email, user.PaymentSystemId);
+            System.Diagnostics.Trace.TraceInformation("Created customer in stripe: '{0}' with id '{1}", customer.Email, customer.PaymentSystemId);
         }
 
         /// <summary>
         /// Retrieves the StripeCustomer associated with the given IStripeUser instance
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="customer"></param>
         /// <returns></returns>
-        public static StripeCustomer RetrieveCustomer(IStripeUser user)
+        public static StripeCustomer RetrieveCustomer(ICustomerEntity customer)
         {
             var customerService = new StripeCustomerService();
-            StripeCustomer stripeCustomer = customerService.Get(user.PaymentSystemId);
+            StripeCustomer stripeCustomer = customerService.Get(customer.PaymentSystemId);
             return stripeCustomer;
         }
 
@@ -119,32 +123,34 @@ namespace StripeEntities
         /// Updates a customer record, using the given payment token
         /// NOTE: Save changes on the underlying context for the model after calling this method
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="customer"></param>
         /// <param name="paymentToken"></param>
-        public static void UpdateCustomer(IStripeUser user, string paymentToken = null)
+        public static StripeCustomer UpdateCustomer(ICustomerEntity customer, string paymentToken = null)
         {
-            var customerUpdate = new StripeCustomerUpdateOptions() { Email = user.Email };
+            var customerUpdate = new StripeCustomerUpdateOptions() { Email = customer.Email };
 
             // Create a token for this payment token
             customerUpdate.Source = new StripeSourceOptions() { TokenId = paymentToken };
 
             var customerService = new StripeCustomerService();
-            StripeCustomer stripeCustomer = customerService.Update(user.PaymentSystemId, customerUpdate);
+            StripeCustomer updatedCustomer = customerService.Update(customer.PaymentSystemId, customerUpdate);
 
-            System.Diagnostics.Trace.TraceInformation("Updated customer in stripe: '{0}' with id '{1}", user.Email, user.PaymentSystemId);
+            System.Diagnostics.Trace.TraceInformation("Updated customer in stripe: '{0}' with id '{1}", customer.Email, customer.PaymentSystemId);
+
+            return updatedCustomer;
         }
 
         /// <summary>
         /// Creates or update a customer
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="customer"></param>
         /// <param name="paymentToken"></param>
-        public static void CreateOrUpdateCustomer(IStripeUser user, string paymentToken = null)
+        public static void CreateOrUpdateCustomer(ICustomerEntity customer, string paymentToken = null)
         {
-            if (user.HasPaymentInfo())
-                UpdateCustomer(user, paymentToken);
+            if (customer.HasPaymentInfo())
+                UpdateCustomer(customer, paymentToken);
             else
-                CreateCustomer(user, paymentToken);
+                CreateCustomer(customer, paymentToken);
         }
 
         #endregion
@@ -156,16 +162,17 @@ namespace StripeEntities
         /// NOTE: Save changes on the underlying context for the model after calling this method
         /// </summary>
         /// <param name="subscription"></param>
-        public static void Subscribe(IStripeUser user, IStripeSubscription subscription, IStripeSubscriptionPlan plan)
+        public static StripeSubscription Subscribe(ICustomerEntity customer, ISubscriptionEntity subscription, IPlanEntity plan)
         {
             if (!string.IsNullOrEmpty(subscription.PaymentSystemId))
-                return;
+                return null;
 
             var subscriptionService = new StripeSubscriptionService();
-            StripeSubscription stripeSubscription = subscriptionService.Create(user.PaymentSystemId, plan.PaymentSystemId);
-            subscription.PaymentSystemId = stripeSubscription.Id;
+            StripeSubscription newSubscription = subscriptionService.Create(customer.PaymentSystemId, plan.PaymentSystemId);
+            subscription.PaymentSystemId = newSubscription.Id;
 
-            System.Diagnostics.Trace.TraceInformation("Subscribed customer in stripe: '{0}' with new subscription id '{1}", user.Email, subscription.PaymentSystemId);
+            System.Diagnostics.Trace.TraceInformation("Subscribed customer in stripe: '{0}' with new subscription id '{1}", customer.Email, subscription.PaymentSystemId);
+            return newSubscription;
         }
 
         /// <summary>
@@ -173,14 +180,16 @@ namespace StripeEntities
         /// </summary>
         /// <param name="subscription"></param>
         /// <param name="newPlan"></param>
-        public static void ChangeSubscriptionPlan(IStripeUser user, IStripeSubscription subscription, IStripeSubscriptionPlan newPlan)
+        public static StripeSubscription ChangeSubscriptionPlan(ICustomerEntity customer, ISubscriptionEntity subscription, IPlanEntity newPlan)
         {
             StripeSubscriptionUpdateOptions options = new StripeSubscriptionUpdateOptions() { PlanId = newPlan.PaymentSystemId };
 
             var subscriptionService = new StripeSubscriptionService();
-            subscriptionService.Update(user.PaymentSystemId, subscription.PaymentSystemId, options);
+            StripeSubscription changedSubscription = subscriptionService.Update(customer.PaymentSystemId, subscription.PaymentSystemId, options);
 
-            System.Diagnostics.Trace.TraceInformation("Changed subscription for customer in stripe: '{0}' with new subscription id '{1}", user.Email, subscription.PaymentSystemId);
+            System.Diagnostics.Trace.TraceInformation("Changed subscription for customer in stripe: '{0}' with new subscription id '{1}", customer.Email, subscription.PaymentSystemId);
+
+            return changedSubscription;
         }
 
         /// <summary>
@@ -188,16 +197,17 @@ namespace StripeEntities
         /// NOTE: Save changes on the underlying context for the model after calling this method
         /// </summary>
         /// <param name="subscription"></param>
-        public static void Unsubscribe(IStripeUser user, IStripeSubscription subscription)
+        public static StripeSubscription Unsubscribe(ICustomerEntity customer, ISubscriptionEntity subscription)
         {
-            if (string.IsNullOrEmpty(subscription.PaymentSystemId) || string.IsNullOrEmpty(user.PaymentSystemId))
-                return;
+            if (string.IsNullOrEmpty(subscription.PaymentSystemId) || string.IsNullOrEmpty(customer.PaymentSystemId))
+                return null;
 
             var subscriptionService = new StripeSubscriptionService();
-            subscriptionService.Cancel(subscription.PaymentSystemId, user.PaymentSystemId);
+            StripeSubscription sub = subscriptionService.Cancel(customer.PaymentSystemId, subscription.PaymentSystemId);
             subscription.PaymentSystemId = null;
 
-            System.Diagnostics.Trace.TraceInformation("Unsuscribed customer in stripe: '{0}' with new subscription id '{1}", user.Email, subscription.PaymentSystemId);
+            System.Diagnostics.Trace.TraceInformation("Unsuscribed customer in stripe: '{0}' with new subscription id '{1}", customer.Email, subscription.PaymentSystemId);
+            return sub;
         }
 
         #endregion
@@ -207,16 +217,16 @@ namespace StripeEntities
         /// <summary>
         /// Charges the given user one time for the given price in USD
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="customer"></param>
         /// <param name="price"></param>
         /// <param name="chargeDescription"></param>
         /// <returns></returns>
-        public static string Charge(IStripeUser user, float price, string chargeDescription = "")
+        public static string Charge(ICustomerEntity customer, float price, string chargeDescription = "")
         {
             var charge = CreateChargeOptions(price, chargeDescription);
 
             // setting up the card
-            charge.CustomerId = user.PaymentSystemId;
+            charge.CustomerId = customer.PaymentSystemId;
 
             return ExecuteCharge(charge);
         }
@@ -248,7 +258,7 @@ namespace StripeEntities
         /// <param name="user"></param>
         /// <param name="product"></param>
         /// <returns></returns>
-        public static string Charge(IStripeUser user, IStripeProduct product)
+        public static string Charge(ICustomerEntity user, IChargeEntity product)
         {
             return Charge(user, product.Price, product.Title);
         }

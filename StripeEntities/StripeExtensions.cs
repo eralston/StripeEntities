@@ -18,7 +18,7 @@ namespace StripeEntities
         /// </summary>
         /// <param name="customer"></param>
         /// <returns></returns>
-        public static StripeCard GetDefaultCard(this StripeCustomer customer)
+        public static StripeCard GetDefaultSource(this StripeCustomer customer)
         {
             if (customer.DefaultSource != null)
                 return customer.DefaultSource;
