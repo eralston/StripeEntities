@@ -44,6 +44,6 @@ namespace StripeEntities
         /// <summary>
         /// Gets or sets the plan for this subscription, which provides info to the billing system like price
         /// </summary>
-        public virtual PlanEntity Plan { get; set; }
+        public virtual PlanEntityBase Plan { get; set; }
     }
 }

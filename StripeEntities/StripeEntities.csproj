@@ -58,7 +58,7 @@
     <Compile Include="StripeExtensions.cs" />
     <Compile Include="StripeManager.cs" />
     <Compile Include="SubscriptionEntityBase.cs" />
-    <Compile Include="PlanEntity.cs" />
+    <Compile Include="PlanEntityBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE" />
