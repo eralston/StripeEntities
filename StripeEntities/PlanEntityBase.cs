@@ -19,7 +19,7 @@ namespace StripeEntities
         /// <summary>
         /// Enumeration for the possible states of a subscription
         /// </summary>
-        public enum SubscriptionState
+        public enum PlanState
         {
             /// <summary>
             /// Indicates the plan is entered, but not yet available
@@ -70,7 +70,7 @@ namespace StripeEntities
         /// Gets or sets the state for this plan
         /// </summary>
         [Editable(true)]
-        [DefaultValue(SubscriptionState.Available)]
-        public virtual SubscriptionState State { get; set; }
+        [DefaultValue(PlanState.Available)]
+        public virtual PlanState State { get; set; }
     }
 }
