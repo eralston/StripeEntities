@@ -87,11 +87,11 @@ namespace StripeEntities
         /// </summary>
         /// <param name="customer"></param>
         /// <param name="paymentToken"></param>
-        public static void CreateCustomer(ICustomerEntity customer, string paymentToken = null)
+        public static StripeCustomer CreateCustomer(ICustomerEntity customer, string paymentToken = null)
         {
             // Do not overwrite the user, ever
             if (customer.HasPaymentInfo())
-                return;
+                return null;
 
             var newCustomer = new StripeCustomerCreateOptions();
 
@@ -107,6 +107,8 @@ namespace StripeEntities
             customer.PaymentSystemId = stripeCustomer.Id;
 
             System.Diagnostics.Trace.TraceInformation("Created customer in stripe: '{0}' with id '{1}", customer.Email, customer.PaymentSystemId);
+
+            return stripeCustomer;
         }
 
         /// <summary>

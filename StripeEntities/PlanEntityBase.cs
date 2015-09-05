@@ -14,7 +14,7 @@ namespace StripeEntities
     /// There should be one of these for each pricing/service tier in the system
     /// These are mirrored into the billing system by API integration
     /// </summary>
-    public class PlanEntityBase : ModelBase, IPlanEntity
+    public abstract class PlanEntityBase : ModelBase, IPlanEntity
     {
         /// <summary>
         /// Enumeration for the possible states of a subscription
