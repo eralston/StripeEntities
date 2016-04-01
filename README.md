@@ -1,5 +1,3 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/yqy3adojv6rql5s8?svg=true)](https://ci.appveyor.com/project/eralston/stripeentities)
-
 # StripeEntities
 A library for integrating Stripe.Net (https://github.com/jaymedavis/stripe.net) into your ASP.Net MVC web app via Entity Framework
 
