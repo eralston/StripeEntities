@@ -5,8 +5,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
-using Masticore;
-
 namespace StripeEntities
 {
     /// <summary>
@@ -14,7 +12,7 @@ namespace StripeEntities
     /// This should be extended into an application-specific class
     /// There should be one instance for each payment relationship between the system and a customer (one for each company)
     /// </summary>
-    public abstract class SubscriptionEntityBase : ModelBase, ISubscriptionEntity
+    public abstract class SubscriptionEntityBase : ISubscriptionEntity
     {
         /// <summary>
         /// Gets or sets the date this subscription will expire and be no longer valid
