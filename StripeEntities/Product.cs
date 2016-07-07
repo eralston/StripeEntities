@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Masticore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 
@@ -13,7 +12,7 @@ namespace StripeEntities
     /// <summary>
     /// Describes a product in the system, a repeatable type of transaction one can make
     /// </summary>
-    public class Product : ModelBase, IChargeEntity
+    public class Product : IChargeEntity
     {
         /// <summary>
         /// Enumeration for the possible states of a subscription

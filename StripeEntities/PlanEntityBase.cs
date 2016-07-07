@@ -5,8 +5,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
-using Masticore;
-
 namespace StripeEntities
 {
     /// <summary>
@@ -14,7 +12,7 @@ namespace StripeEntities
     /// There should be one of these for each pricing/service tier in the system
     /// These are mirrored into the billing system by API integration
     /// </summary>
-    public abstract class PlanEntityBase : ModelBase, IPlanEntity
+    public abstract class PlanEntityBase : IPlanEntity
     {
         /// <summary>
         /// Enumeration for the possible states of a subscription

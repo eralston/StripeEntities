@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace StripeEntities
 {
@@ -40,7 +41,7 @@ namespace StripeEntities
 
 
 
-            System.Diagnostics.Trace.TraceInformation("Created new plan in stripe: '{0}' with id {1}", plan.Title, plan.PaymentSystemId);
+            Logger.Log<StripeManager>("Created new plan in stripe: '{0}' with id {1}", LogLevel.Information, plan.Title, plan.PaymentSystemId);
 
             return newPlan;
         }
@@ -58,7 +59,7 @@ namespace StripeEntities
             StripePlanService planService = new StripePlanService();
             StripePlan updatedPlan = planService.Update(plan.PaymentSystemId, options);
 
-            System.Diagnostics.Trace.TraceInformation("Updated plan in stripe: '{0}' with id '{1}'", plan.Title, plan.PaymentSystemId);
+            Logger.Log<StripeManager>("Updated plan in stripe: '{0}' with id '{1}'", LogLevel.Information, plan.Title, plan.PaymentSystemId);
 
             return updatedPlan;
         }
@@ -73,7 +74,7 @@ namespace StripeEntities
             var planService = new StripePlanService();
             planService.Delete(plan.PaymentSystemId);
 
-            System.Diagnostics.Trace.TraceInformation("Deleting plan in stripe: '{0}' with id '{1}", plan.Title, plan.PaymentSystemId);
+            Logger.Log<StripeManager>("Deleting plan in stripe: '{0}' with id '{1}", LogLevel.Information, plan.Title, plan.PaymentSystemId);
         }
 
         #endregion
@@ -106,7 +107,7 @@ namespace StripeEntities
             // Set the accounting info
             customer.PaymentSystemId = stripeCustomer.Id;
 
-            System.Diagnostics.Trace.TraceInformation("Created customer in stripe: '{0}' with id '{1}", customer.Email, customer.PaymentSystemId);
+            Logger.Log<StripeManager>("Created customer in stripe: '{0}' with id '{1}", LogLevel.Information, customer.Email, customer.PaymentSystemId);
 
             return stripeCustomer;
         }
@@ -139,7 +140,7 @@ namespace StripeEntities
             var customerService = new StripeCustomerService();
             StripeCustomer updatedCustomer = customerService.Update(customer.PaymentSystemId, customerUpdate);
 
-            System.Diagnostics.Trace.TraceInformation("Updated customer in stripe: '{0}' with id '{1}", customer.Email, customer.PaymentSystemId);
+            Logger.Log<StripeManager>("Updated customer in stripe: '{0}' with id '{1}", LogLevel.Information, customer.Email, customer.PaymentSystemId);
 
             return updatedCustomer;
         }
@@ -178,7 +179,7 @@ namespace StripeEntities
             StripeSubscription newSubscription = subscriptionService.Create(customer.PaymentSystemId, plan.PaymentSystemId);
             subscription.PaymentSystemId = newSubscription.Id;
 
-            System.Diagnostics.Trace.TraceInformation("Subscribed customer in stripe: '{0}' with new subscription id '{1}", customer.Email, subscription.PaymentSystemId);
+            Logger.Log<StripeManager>("Subscribed customer in stripe: '{0}' with new subscription id '{1}", LogLevel.Information, customer.Email, subscription.PaymentSystemId);
             return newSubscription;
         }
 
@@ -196,7 +197,7 @@ namespace StripeEntities
             var subscriptionService = new StripeSubscriptionService();
             StripeSubscription changedSubscription = subscriptionService.Update(customer.PaymentSystemId, subscription.PaymentSystemId, options);
 
-            System.Diagnostics.Trace.TraceInformation("Changed subscription for customer in stripe: '{0}' with new subscription id '{1}", customer.Email, subscription.PaymentSystemId);
+            Logger.Log<StripeManager>("Changed subscription for customer in stripe: '{0}' with new subscription id '{1}", LogLevel.Information, customer.Email, subscription.PaymentSystemId);
 
             return changedSubscription;
         }
@@ -217,7 +218,7 @@ namespace StripeEntities
             StripeSubscription sub = subscriptionService.Cancel(customer.PaymentSystemId, subscription.PaymentSystemId);
             subscription.PaymentSystemId = null;
 
-            System.Diagnostics.Trace.TraceInformation("Unsuscribed customer in stripe: '{0}' with new subscription id '{1}", customer.Email, subscription.PaymentSystemId);
+            Logger.Log<StripeManager>("Unsuscribed customer in stripe: '{0}' with new subscription id '{1}", LogLevel.Information, customer.Email, subscription.PaymentSystemId);
             return sub;
         }
 
@@ -308,7 +309,7 @@ namespace StripeEntities
             StripeCharge stripeCharge = chargeService.Create(charge);
 
             // Log the charge
-            System.Diagnostics.Trace.TraceInformation("Created new charge in stripe: '{0}' for {1}",
+            Logger.Log<StripeManager>("Created new charge in stripe: '{0}' for {1}", LogLevel.Information,
                 charge.Description,
                 charge.Amount);
 
